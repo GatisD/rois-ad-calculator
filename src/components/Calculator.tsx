@@ -22,7 +22,7 @@ export default function Calculator() {
             <div className="text-[11px] uppercase tracking-wide text-muted mb-2">Kopējais budžets / mēnesī</div>
             <div className="bg-panel2 border border-line rounded-xl px-4 py-3 flex items-baseline gap-2">
               <input
-                type="number" min={0} value={total}
+                type="number" min={0} value={total === 0 ? '' : total}
                 onChange={(e) => {
                   const v = Number(e.target.value)
                   if (Number.isFinite(v)) setTotal(Math.max(0, v))
@@ -38,7 +38,7 @@ export default function Calculator() {
               <span className="text-[11px] uppercase tracking-wide text-muted">Apkalpošana</span>
               <div className="flex items-center gap-1">
                 <input
-                  type="number" min={0} max={100} value={mgmtPct}
+                  type="number" min={0} max={100} value={mgmtPct === 0 ? '' : mgmtPct}
                   onChange={(e) => {
                     const v = Number(e.target.value)
                     if (!Number.isFinite(v)) return
