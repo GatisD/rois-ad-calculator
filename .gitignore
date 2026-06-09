@@ -1,0 +1,5 @@
+node_modules
+dist
+.superpowers/
+.vercel
+.DS_Store
