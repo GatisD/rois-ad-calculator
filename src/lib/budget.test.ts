@@ -27,4 +27,7 @@ describe('formatEUR', () => {
     expect(formatEUR(700)).toBe('700')
     expect(formatEUR(12500)).toBe('12 500')
   })
+  it('formatEUR(0) returns "0"', () => {
+    expect(formatEUR(0)).toBe('0')
+  })
 })

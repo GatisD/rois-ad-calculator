@@ -23,7 +23,10 @@ export default function Calculator() {
             <div className="bg-panel2 border border-line rounded-xl px-4 py-3 flex items-baseline gap-2">
               <input
                 type="number" min={0} value={total}
-                onChange={(e) => setTotal(Math.max(0, Number(e.target.value)))}
+                onChange={(e) => {
+                  const v = Number(e.target.value)
+                  if (Number.isFinite(v)) setTotal(Math.max(0, v))
+                }}
                 className="bg-transparent outline-none font-head font-bold text-3xl w-full text-txt"
               />
               <span className="font-head font-bold text-xl text-gold">EUR</span>
@@ -36,7 +39,11 @@ export default function Calculator() {
               <div className="flex items-center gap-1">
                 <input
                   type="number" min={0} max={100} value={mgmtPct}
-                  onChange={(e) => setMgmtPct(clampPct(Number(e.target.value)))}
+                  onChange={(e) => {
+                    const v = Number(e.target.value)
+                    if (!Number.isFinite(v)) return
+                    setMgmtPct(clampPct(v))
+                  }}
                   className="bg-panel2 border border-line rounded-md w-14 text-right px-2 py-1 text-goldSoft font-head font-semibold outline-none"
                 />
                 <span className="text-muted text-sm">%</span>
