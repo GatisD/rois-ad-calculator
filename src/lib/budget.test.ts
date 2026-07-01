@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { computeSplit, formatEUR } from './budget'
+import { computeSplit, formatEUR, mgmtPctForBudget, tierForBudget, TIERS } from './budget'
 
 describe('computeSplit', () => {
   it('splits 1000 at 30% management into 300 / 700', () => {
@@ -18,6 +18,37 @@ describe('computeSplit', () => {
   it('handles 0% and 100% bounds', () => {
     expect(computeSplit(500, 0)).toEqual({ mgmt: 0, ads: 500 })
     expect(computeSplit(500, 100)).toEqual({ mgmt: 500, ads: 0 })
+  })
+})
+
+describe('mgmtPctForBudget', () => {
+  it('budgets under 5 000 pay 30% management', () => {
+    expect(mgmtPctForBudget(0)).toBe(30)
+    expect(mgmtPctForBudget(1000)).toBe(30)
+    expect(mgmtPctForBudget(4999)).toBe(30)
+  })
+  it('budgets from 5 000 to under 10 000 pay 25%', () => {
+    expect(mgmtPctForBudget(5000)).toBe(25)
+    expect(mgmtPctForBudget(7500)).toBe(25)
+    expect(mgmtPctForBudget(9999)).toBe(25)
+  })
+  it('budgets of 10 000 and up pay 20%', () => {
+    expect(mgmtPctForBudget(10000)).toBe(20)
+    expect(mgmtPctForBudget(25000)).toBe(20)
+  })
+})
+
+describe('tierForBudget', () => {
+  it('returns the matching tier object for each band', () => {
+    expect(tierForBudget(3000).pct).toBe(30)
+    expect(tierForBudget(6000).pct).toBe(25)
+    expect(tierForBudget(12000).pct).toBe(20)
+  })
+  it('every tier pct matches mgmtPctForBudget at a representative budget', () => {
+    for (const t of TIERS) {
+      const sample = t.upTo === null ? t.min + 1000 : (t.min + t.upTo) / 2
+      expect(mgmtPctForBudget(sample)).toBe(t.pct)
+    }
   })
 })
 

@@ -1,15 +1,23 @@
 import { useState } from 'react'
-import { computeSplit, formatEUR } from '../lib/budget'
-
-const PRESETS = [20, 30, 40]
+import { computeSplit, formatEUR, mgmtPctForBudget, tierForBudget, TIERS } from '../lib/budget'
 
 export default function Calculator() {
   const [total, setTotal] = useState(1000)
-  const [mgmtPct, setMgmtPct] = useState(30)
+  // null = follow the budget tier automatically; a number = manual override
+  const [override, setOverride] = useState<number | null>(null)
+
+  const autoPct = mgmtPctForBudget(total)
+  const mgmtPct = override ?? autoPct
   const adsPct = 100 - mgmtPct
   const { mgmt, ads } = computeSplit(total, mgmtPct)
+  const activeTier = tierForBudget(total)
+  const isManual = override !== null && override !== autoPct
 
   const clampPct = (v: number) => Math.max(0, Math.min(100, Math.round(v)))
+  const setBudget = (v: number) => {
+    setTotal(Math.max(0, v))
+    setOverride(null) // budget change re-enables auto tier
+  }
 
   return (
     <div className="min-h-full flex items-center justify-center p-4 sm:p-8">
@@ -25,11 +33,15 @@ export default function Calculator() {
                 type="number" min={0} value={total === 0 ? '' : total}
                 onChange={(e) => {
                   const v = Number(e.target.value)
-                  if (Number.isFinite(v)) setTotal(Math.max(0, v))
+                  if (Number.isFinite(v)) setBudget(v)
                 }}
                 className="bg-transparent outline-none font-head font-bold text-3xl w-full text-txt"
               />
               <span className="font-head font-bold text-xl text-gold">EUR</span>
+            </div>
+            <div className="text-xs text-muted mt-2">
+              Tiers <span className="text-goldSoft font-semibold">{activeTier.label}</span> → apkalpošana{' '}
+              <span className="text-goldSoft font-semibold">{autoPct}%</span>
             </div>
           </div>
 
@@ -42,7 +54,7 @@ export default function Calculator() {
                   onChange={(e) => {
                     const v = Number(e.target.value)
                     if (!Number.isFinite(v)) return
-                    setMgmtPct(clampPct(v))
+                    setOverride(clampPct(v))
                   }}
                   className="bg-panel2 border border-line rounded-md w-14 text-right px-2 py-1 text-goldSoft font-head font-semibold outline-none"
                 />
@@ -51,20 +63,32 @@ export default function Calculator() {
             </div>
             <input
               type="range" min={0} max={100} value={mgmtPct}
-              onChange={(e) => setMgmtPct(Number(e.target.value))}
+              onChange={(e) => setOverride(Number(e.target.value))}
               className="w-full accent-gold"
             />
             <div className="flex gap-2 mt-3">
-              {PRESETS.map((p) => (
+              {TIERS.map((t) => (
                 <button
-                  key={p} onClick={() => setMgmtPct(p)}
-                  className={`flex-1 rounded-lg py-2 text-sm font-head font-semibold border transition-colors ${
-                    mgmtPct === p
+                  key={t.label} onClick={() => setOverride(t.pct === autoPct ? null : t.pct)}
+                  className={`flex-1 rounded-lg py-2 border transition-colors text-center leading-tight ${
+                    mgmtPct === t.pct
                       ? 'bg-gold text-bg border-gold'
                       : 'bg-panel2 text-muted border-line hover:border-gold'
                   }`}
-                >{p}%</button>
+                >
+                  <span className="block font-head font-semibold text-sm">{t.pct}%</span>
+                  <span className={`block text-[10px] ${mgmtPct === t.pct ? 'text-bg/70' : 'text-muted'}`}>{t.label}</span>
+                </button>
               ))}
+            </div>
+            <div className="mt-2 h-4 text-[11px]">
+              {isManual ? (
+                <button onClick={() => setOverride(null)} className="text-muted hover:text-gold transition-colors">
+                  Manuāli iestatīts - <span className="underline">atiestatīt uz auto ({autoPct}%)</span>
+                </button>
+              ) : (
+                <span className="text-muted">Auto pēc budžeta</span>
+              )}
             </div>
           </div>
 
