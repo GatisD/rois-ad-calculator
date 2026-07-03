@@ -35,7 +35,7 @@ export default function Calculator() {
             <div className="text-[11px] uppercase tracking-wide text-muted mb-2">Kopējais budžets / mēnesī</div>
             <div className="bg-panel2 border border-line rounded-xl px-4 py-3 flex items-baseline gap-2">
               <input
-                type="number" min={0} value={shown('total') === 0 ? '' : shown('total')}
+                type="number" min={0} value={shown('total')} onFocus={(e) => e.target.select()}
                 onChange={onEdit('total')}
                 className="bg-transparent outline-none font-head font-bold text-3xl w-full text-txt"
               />
@@ -48,7 +48,7 @@ export default function Calculator() {
               <div className="text-[11px] uppercase tracking-wide text-muted mb-2">Apkalpošana / mēnesī</div>
               <div className="flex items-baseline gap-1">
                 <input
-                  type="number" min={0} value={shown('fee') === 0 ? '' : shown('fee')}
+                  type="number" min={0} value={shown('fee')} onFocus={(e) => e.target.select()}
                   onChange={onEdit('fee')}
                   className="bg-transparent outline-none font-head font-bold text-2xl w-full text-txt"
                 />
@@ -62,7 +62,7 @@ export default function Calculator() {
               <div className="text-[11px] uppercase tracking-wide text-muted mb-2">Reklāmas budžets / mēnesī</div>
               <div className="flex items-baseline gap-1">
                 <input
-                  type="number" min={0} value={shown('ads') === 0 ? '' : shown('ads')}
+                  type="number" min={0} value={shown('ads')} onFocus={(e) => e.target.select()}
                   onChange={onEdit('ads')}
                   className="bg-transparent outline-none font-head font-bold text-2xl w-full text-txt"
                 />
