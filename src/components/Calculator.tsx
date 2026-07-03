@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import {
   computeFromAds,
-  computeFromFee,
   computeFromTotal,
   formatEUR,
   MIN_FEE,
   SETUP_PER_CHANNEL,
 } from '../lib/budget'
 
-type Field = 'total' | 'fee' | 'ads'
+type Field = 'total' | 'ads'
 
 export default function Calculator() {
   // The last edited field drives the other two. Kept as a digits-only string
@@ -16,10 +15,7 @@ export default function Calculator() {
   const [source, setSource] = useState<{ field: Field; raw: string }>({ field: 'total', raw: '0' })
 
   const value = Number(source.raw || '0')
-  const r =
-    source.field === 'total' ? computeFromTotal(value)
-    : source.field === 'ads' ? computeFromAds(value)
-    : computeFromFee(value)
+  const r = source.field === 'total' ? computeFromTotal(value) : computeFromAds(value)
 
   const shown = (field: Field) => (source.field === field ? source.raw : String(r[field]))
   const onEdit = (field: Field) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,11 +45,7 @@ export default function Calculator() {
             <div className="bg-panel2 border border-line rounded-xl p-4">
               <div className="text-[11px] uppercase tracking-wide text-muted mb-2">Apkalpošana / mēnesī</div>
               <div className="flex items-baseline gap-1">
-                <input
-                  type="text" inputMode="numeric" pattern="[0-9]*" value={shown('fee')} onFocus={(e) => e.target.select()}
-                  onChange={onEdit('fee')}
-                  className="bg-transparent outline-none font-head font-bold text-2xl w-full text-txt"
-                />
+                <span className="font-head font-bold text-2xl w-full text-txt">{formatEUR(r.fee)}</span>
                 <span className="font-head font-bold text-base text-gold">EUR</span>
               </div>
               <div className="text-xs text-muted mt-1">
