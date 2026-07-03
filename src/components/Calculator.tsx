@@ -13,7 +13,6 @@ type Field = 'total' | 'fee' | 'ads'
 export default function Calculator() {
   // The last edited field drives the other two.
   const [source, setSource] = useState<{ field: Field; value: number }>({ field: 'total', value: 2000 })
-  const [channels, setChannels] = useState(1)
 
   const r =
     source.field === 'total' ? computeFromTotal(source.value)
@@ -25,8 +24,6 @@ export default function Calculator() {
     const v = Number(e.target.value)
     if (Number.isFinite(v)) setSource({ field, value: Math.max(0, v) })
   }
-  const setup = SETUP_PER_CHANNEL * Math.max(1, channels)
-
   return (
     <div className="min-h-full flex items-center justify-center p-4 sm:p-8">
       <div className="w-full max-w-md">
@@ -76,26 +73,12 @@ export default function Calculator() {
           </div>
 
           <div className="border-t border-line pt-5">
-            <div className="flex items-center justify-between gap-3">
+            <div className="bg-panel2 border border-line rounded-xl px-4 py-3 flex items-baseline justify-between gap-3">
               <div>
-                <div className="text-[11px] uppercase tracking-wide text-muted mb-1">Setup - vienreizējs maksājums</div>
-                <div className="text-xs text-muted">{formatEUR(SETUP_PER_CHANNEL)} EUR par kanālu</div>
+                <div className="text-[11px] uppercase tracking-wide text-muted">Setup - vienreizējs maksājums</div>
+                <div className="text-xs text-muted mt-1">par kanālu</div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted">Kanāli</span>
-                <input
-                  type="number" min={1} value={channels === 0 ? '' : channels}
-                  onChange={(e) => {
-                    const v = Number(e.target.value)
-                    if (Number.isFinite(v)) setChannels(Math.max(0, Math.round(v)))
-                  }}
-                  className="bg-panel2 border border-line rounded-md w-14 text-right px-2 py-1 text-goldSoft font-head font-semibold outline-none"
-                />
-              </div>
-            </div>
-            <div className="mt-3 bg-panel2 border border-line rounded-xl px-4 py-3 flex items-baseline justify-between">
-              <span className="text-[11px] uppercase tracking-wide text-muted">Setup kopā</span>
-              <span className="font-head font-bold text-xl">{formatEUR(setup)} <span className="text-gold text-base">EUR</span></span>
+              <span className="font-head font-bold text-xl whitespace-nowrap">{formatEUR(SETUP_PER_CHANNEL)} <span className="text-gold text-base">EUR</span></span>
             </div>
           </div>
         </div>
