@@ -1,38 +1,38 @@
 import { describe, it, expect } from 'vitest'
-import { computeSplit, formatEUR, mgmtPctForBudget, tierForBudget, TIERS } from './budget'
+import { computeFromAds, formatEUR, mgmtPctForBudget, tierForBudget, TIERS } from './budget'
 
-describe('computeSplit', () => {
-  it('splits 1000 at 30% management into 300 / 700', () => {
-    expect(computeSplit(1000, 30)).toEqual({ mgmt: 300, ads: 700 })
+describe('computeFromAds', () => {
+  it('adds 30% fee on top of a 2 000 ads budget (fee 600, total 2 600)', () => {
+    expect(computeFromAds(2000)).toEqual({ pct: 30, fee: 600, total: 2600 })
   })
-  it('sums exactly to total with rounding (1000 @ 33%)', () => {
-    const { mgmt, ads } = computeSplit(1000, 33)
-    expect(mgmt).toBe(330)
-    expect(mgmt + ads).toBe(1000)
+  it('switches to 25% at a 5 000 ads budget (fee 1 250, total 6 250)', () => {
+    expect(computeFromAds(5000)).toEqual({ pct: 25, fee: 1250, total: 6250 })
   })
-  it('handles odd totals so parts always sum to total (999 @ 33%)', () => {
-    const { mgmt, ads } = computeSplit(999, 33)
-    expect(mgmt + ads).toBe(999)
-    expect(mgmt).toBe(330)
+  it('switches to 20% at a 10 000 ads budget (fee 2 000, total 12 000)', () => {
+    expect(computeFromAds(10000)).toEqual({ pct: 20, fee: 2000, total: 12000 })
   })
-  it('handles 0% and 100% bounds', () => {
-    expect(computeSplit(500, 0)).toEqual({ mgmt: 0, ads: 500 })
-    expect(computeSplit(500, 100)).toEqual({ mgmt: 500, ads: 0 })
+  it('rounds the fee and keeps total = ads + fee (999 @ 30%)', () => {
+    const { fee, total } = computeFromAds(999)
+    expect(fee).toBe(300)
+    expect(total).toBe(999 + 300)
+  })
+  it('handles 0 ads budget', () => {
+    expect(computeFromAds(0)).toEqual({ pct: 30, fee: 0, total: 0 })
   })
 })
 
-describe('mgmtPctForBudget', () => {
-  it('budgets under 5 000 pay 30% management', () => {
+describe('mgmtPctForBudget (tier by ads budget)', () => {
+  it('ads budgets under 5 000 pay 30% fee', () => {
     expect(mgmtPctForBudget(0)).toBe(30)
     expect(mgmtPctForBudget(1000)).toBe(30)
     expect(mgmtPctForBudget(4999)).toBe(30)
   })
-  it('budgets from 5 000 to under 10 000 pay 25%', () => {
+  it('ads budgets from 5 000 to under 10 000 pay 25%', () => {
     expect(mgmtPctForBudget(5000)).toBe(25)
     expect(mgmtPctForBudget(7500)).toBe(25)
     expect(mgmtPctForBudget(9999)).toBe(25)
   })
-  it('budgets of 10 000 and up pay 20%', () => {
+  it('ads budgets of 10 000 and up pay 20%', () => {
     expect(mgmtPctForBudget(10000)).toBe(20)
     expect(mgmtPctForBudget(25000)).toBe(20)
   })
