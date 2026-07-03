@@ -27,7 +27,7 @@ export default function Calculator() {
   return (
     <div className="min-h-full flex items-center justify-center p-4 sm:p-8">
       <div className="w-full max-w-md">
-        <h1 className="font-head font-bold text-2xl">ROIS budžeta kalkulators</h1>
+        <h1 className="font-head font-bold text-2xl">ROIS mārketinga investīciju kalkulators</h1>
         <p className="text-muted text-sm mb-6">Ievadi jebkuru no summām - pārējās sarēķinām mēs.</p>
 
         <div className="bg-panel border border-line rounded-2xl p-5 sm:p-6 space-y-6">
@@ -55,7 +55,7 @@ export default function Calculator() {
                 <span className="font-head font-bold text-base text-gold">EUR</span>
               </div>
               <div className="text-xs text-muted mt-1">
-                {r.minApplied ? `minimālā maksa ${formatEUR(MIN_FEE)} EUR` : `${r.pct}% no budžeta`}
+                {r.minApplied ? `minimālā maksa ${formatEUR(MIN_FEE)} EUR` : `${r.pct}% no kopējās investīcijas`}
               </div>
             </div>
             <div className="rounded-xl p-4 border border-gold bg-gradient-to-br from-gold/10 to-transparent">
