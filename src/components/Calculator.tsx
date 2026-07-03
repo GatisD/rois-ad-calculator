@@ -12,7 +12,7 @@ type Field = 'total' | 'fee' | 'ads'
 
 export default function Calculator() {
   // The last edited field drives the other two.
-  const [source, setSource] = useState<{ field: Field; value: number }>({ field: 'total', value: 2000 })
+  const [source, setSource] = useState<{ field: Field; value: number }>({ field: 'total', value: 0 })
 
   const r =
     source.field === 'total' ? computeFromTotal(source.value)
