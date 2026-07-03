@@ -11,18 +11,20 @@ import {
 type Field = 'total' | 'fee' | 'ads'
 
 export default function Calculator() {
-  // The last edited field drives the other two.
-  const [source, setSource] = useState<{ field: Field; value: number }>({ field: 'total', value: 0 })
+  // The last edited field drives the other two. Kept as a digits-only string
+  // so the display never picks up leading zeros ("0100").
+  const [source, setSource] = useState<{ field: Field; raw: string }>({ field: 'total', raw: '0' })
 
+  const value = Number(source.raw || '0')
   const r =
-    source.field === 'total' ? computeFromTotal(source.value)
-    : source.field === 'ads' ? computeFromAds(source.value)
-    : computeFromFee(source.value)
+    source.field === 'total' ? computeFromTotal(value)
+    : source.field === 'ads' ? computeFromAds(value)
+    : computeFromFee(value)
 
-  const shown = (field: Field) => (source.field === field ? source.value : r[field])
+  const shown = (field: Field) => (source.field === field ? source.raw : String(r[field]))
   const onEdit = (field: Field) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = Number(e.target.value)
-    if (Number.isFinite(v)) setSource({ field, value: Math.max(0, v) })
+    const raw = e.target.value.replace(/\D/g, '').replace(/^0+(?=\d)/, '') || '0'
+    setSource({ field, raw })
   }
   return (
     <div className="min-h-full flex items-center justify-center p-4 sm:p-8">
@@ -35,7 +37,7 @@ export default function Calculator() {
             <div className="text-[11px] uppercase tracking-wide text-muted mb-2">Kopējais budžets / mēnesī</div>
             <div className="bg-panel2 border border-line rounded-xl px-4 py-3 flex items-baseline gap-2">
               <input
-                type="number" min={0} value={shown('total')} onFocus={(e) => e.target.select()}
+                type="text" inputMode="numeric" pattern="[0-9]*" value={shown('total')} onFocus={(e) => e.target.select()}
                 onChange={onEdit('total')}
                 className="bg-transparent outline-none font-head font-bold text-3xl w-full text-txt"
               />
@@ -48,7 +50,7 @@ export default function Calculator() {
               <div className="text-[11px] uppercase tracking-wide text-muted mb-2">Apkalpošana / mēnesī</div>
               <div className="flex items-baseline gap-1">
                 <input
-                  type="number" min={0} value={shown('fee')} onFocus={(e) => e.target.select()}
+                  type="text" inputMode="numeric" pattern="[0-9]*" value={shown('fee')} onFocus={(e) => e.target.select()}
                   onChange={onEdit('fee')}
                   className="bg-transparent outline-none font-head font-bold text-2xl w-full text-txt"
                 />
@@ -62,7 +64,7 @@ export default function Calculator() {
               <div className="text-[11px] uppercase tracking-wide text-muted mb-2">Reklāmas budžets / mēnesī</div>
               <div className="flex items-baseline gap-1">
                 <input
-                  type="number" min={0} value={shown('ads')} onFocus={(e) => e.target.select()}
+                  type="text" inputMode="numeric" pattern="[0-9]*" value={shown('ads')} onFocus={(e) => e.target.select()}
                   onChange={onEdit('ads')}
                   className="bg-transparent outline-none font-head font-bold text-2xl w-full text-txt"
                 />
